@@ -1,6 +1,6 @@
 # utho
 
-A new Flutter project.
+Alarm Clock for Muslims.
 
 ## Getting Started
 
