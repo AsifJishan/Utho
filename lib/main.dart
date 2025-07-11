@@ -15,9 +15,18 @@ class AlarmClockApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Utho',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ThemeData.dark(
         useMaterial3: true,
+      ).copyWith(
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.white,
+          secondary: Colors.grey,
+          surface: Colors.black,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+        ),
       ),
       home: const AlarmClockScreen(),
     );
@@ -199,13 +208,13 @@ class _AlarmClockScreenState extends State<AlarmClockScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Current Time Display
+            // Current Time Display - change to black and white
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
+                color: Colors.grey.shade900,
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.blue.shade200),
+                border: Border.all(color: Colors.grey.shade700),
               ),
               child: Column(
                 children: [
@@ -228,13 +237,13 @@ class _AlarmClockScreenState extends State<AlarmClockScreen> {
             
             const SizedBox(height: 40),
             
-            // Alarm Settings
+            // Alarm Settings - change to black and white
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.orange.shade50,
+                color: Colors.grey.shade800,
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.orange.shade200),
+                border: Border.all(color: Colors.grey.shade600),
               ),
               child: Column(
                 children: [
@@ -290,13 +299,13 @@ class _AlarmClockScreenState extends State<AlarmClockScreen> {
             
             const SizedBox(height: 30),
             
-            // Ringtone Selection
+            // Ringtone Selection - change to black and white
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.purple.shade50,
+                color: Colors.grey.shade700,
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.purple.shade200),
+                border: Border.all(color: Colors.grey.shade500),
               ),
               child: Column(
                 children: [
@@ -328,24 +337,24 @@ class _AlarmClockScreenState extends State<AlarmClockScreen> {
             
             const SizedBox(height: 30),
             
-            // Status Indicator
+            // Status Indicator - change to black and white
             if (_isAlarmSet)
               Container(
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade100,
+                  color: Colors.grey.shade800,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.green),
+                  border: Border.all(color: Colors.white),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.alarm_on, color: Colors.green.shade700),
-                    const SizedBox(width: 10),
+                    Icon(Icons.alarm_on, color: Colors.white),
+                    SizedBox(width: 10),
                     Text(
                       'Alarm Active',
                       style: TextStyle(
-                        color: Colors.green.shade700,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
