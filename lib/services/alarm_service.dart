@@ -1,20 +1,46 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AlarmService {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  static const String _ringtoneKey = 'selected_ringtone';
+  // Add a key for the alarm's on/off state
+  static const String _alarmStateKey = 'alarm_is_set';
 
-  Future<void> playAlarm(String ringtone) async {
-    try {
-      await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-      await _audioPlayer.play(AssetSource(ringtone.replaceFirst('assets/', '')));
-    } catch (e) {
-      debugPrint('Error playing alarm: $e');
+  Future<void> playAlarm(String ringtonePath) async {
+    Source source;
+    if (ringtonePath.startsWith('/')) {
+      source = DeviceFileSource(ringtonePath);
+    } else {
+      source = AssetSource(ringtonePath.replaceFirst('assets/', ''));
     }
+    await _audioPlayer.play(source);
   }
 
   Future<void> stopAlarm() async {
     await _audioPlayer.stop();
+  }
+
+  Future<void> saveRingtone(String ringtonePath) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_ringtoneKey, ringtonePath);
+  }
+
+  Future<String?> loadRingtone() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_ringtoneKey);
+  }
+
+  // ADD THIS METHOD to save the alarm's on/off state
+  Future<void> saveAlarmState(bool isSet) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_alarmStateKey, isSet);
+  }
+
+  // ADD THIS METHOD to load the alarm's on/off state
+  Future<bool> loadAlarmState() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_alarmStateKey) ?? false; // Default to false if not found
   }
 
   void dispose() {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/alarm_viewmodel.dart';
-import '../widgets/quiz_dialog.dart';
 
 class AlarmClockView extends StatefulWidget {
   const AlarmClockView({super.key});
@@ -11,8 +10,6 @@ class AlarmClockView extends StatefulWidget {
 }
 
 class _AlarmClockViewState extends State<AlarmClockView> {
-  bool _hasShownQuizDialog = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,33 +19,23 @@ class _AlarmClockViewState extends State<AlarmClockView> {
       ),
       body: Consumer<AlarmViewModel>(
         builder: (context, viewModel, child) {
-          // Handle alarm dialog showing
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (viewModel.alarmModel.isAlarmRinging && !_hasShownQuizDialog) {
-              _hasShownQuizDialog = true;
-              _showQuizDialog(context, viewModel);
-            }
-            
-            // Reset flag when alarm is no longer ringing
-            if (!viewModel.alarmModel.isAlarmRinging) {
-              _hasShownQuizDialog = false;
-            }
-          });
-
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildCurrentTimeDisplay(viewModel),
-                const SizedBox(height: 40),
-                _buildAlarmSettings(context, viewModel),
-                const SizedBox(height: 30),
-                _buildRingtoneSelection(viewModel),
-                const SizedBox(height: 30),
-                if (viewModel.alarmModel.isAlarmSet)
-                  _buildAlarmStatus(),
-              ],
+            // Wrap the Column in a SingleChildScrollView to prevent overflow
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildCurrentTimeDisplay(viewModel),
+                  const SizedBox(height: 40),
+                  _buildAlarmSettings(context, viewModel),
+                  const SizedBox(height: 30),
+                  _buildRingtoneSelection(viewModel),
+                  const SizedBox(height: 30),
+                  if (viewModel.alarmModel.isAlarmSet)
+                    _buildAlarmStatus(),
+                ],
+              ),
             ),
           );
         },
@@ -144,37 +131,37 @@ class _AlarmClockViewState extends State<AlarmClockView> {
   }
 
   Widget _buildRingtoneSelection(AlarmViewModel viewModel) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade700,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade500),
-      ),
-      child: Column(
-        children: [
-          const Text(
-            'Ringtone',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+    return Column(
+      children: [
+        DropdownButtonFormField<String>(
+          value: viewModel.alarmModel.selectedRingtone,
+          isExpanded: true,
+          items: viewModel.ringtones.map((String ringtone) {
+            return DropdownMenuItem<String>(
+              value: ringtone,
+              child: Text('Alarm Tone ${viewModel.ringtones.indexOf(ringtone) + 1}'),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              viewModel.selectRingtone(newValue);
+            }
+          },
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.folder_open),
+          label: const Text('Select from Device'),
+          onPressed: () {
+            // We will call a new method in the view model
+            Provider.of<AlarmViewModel>(context, listen: false)
+                .selectRingtoneFromFile();
+          },
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 50),
           ),
-          const SizedBox(height: 15),
-          DropdownButton<String>(
-            value: viewModel.alarmModel.selectedRingtone,
-            isExpanded: true,
-            items: viewModel.ringtones.map((String ringtone) {
-              return DropdownMenuItem<String>(
-                value: ringtone,
-                child: Text('Alarm Tone ${viewModel.ringtones.indexOf(ringtone) + 1}'),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              if (newValue != null) {
-                viewModel.selectRingtone(newValue);
-              }
-            },
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -214,7 +201,7 @@ class _AlarmClockViewState extends State<AlarmClockView> {
   }
 
   void _setAlarm(BuildContext context, AlarmViewModel viewModel) {
-    viewModel.setAlarm();
+    viewModel.scheduleAlarm();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Alarm set for ${viewModel.alarmModel.selectedTime!.format(context)}'),
@@ -230,14 +217,6 @@ class _AlarmClockViewState extends State<AlarmClockView> {
         content: Text('Alarm cancelled'),
         duration: Duration(seconds: 2),
       ),
-    );
-  }
-
-  void _showQuizDialog(BuildContext context, AlarmViewModel viewModel) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => QuizDialog(viewModel: viewModel),
     );
   }
 }
