@@ -26,11 +26,11 @@ void main() async {
         ledColor: Colors.white,
         importance: NotificationImportance.Max,
         channelShowBadge: true,
-        playSound: true,
+        playSound: false,
         enableVibration: true,
         // ADD THIS LINE to give the alarm higher priority
         criticalAlerts: true,
-        soundSource: 'resource://raw/alarm_tone_1',
+        // soundSource: 'resource://raw/alarm_tone_1',
       )
     ],
     debug: true,

@@ -81,12 +81,6 @@ class _AlarmClockViewState extends State<AlarmClockView> {
       ),
       child: Column(
         children: [
-          const Text(
-            'Alarm Settings',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 15),
-          
           if (viewModel.alarmModel.selectedTime != null)
             Text(
               'Selected Time: ${viewModel.alarmModel.selectedTime!.format(context)}',
@@ -133,33 +127,11 @@ class _AlarmClockViewState extends State<AlarmClockView> {
   Widget _buildRingtoneSelection(AlarmViewModel viewModel) {
     return Column(
       children: [
-        DropdownButtonFormField<String>(
-          value: viewModel.alarmModel.selectedRingtone,
-          isExpanded: true,
-          items: viewModel.ringtones.map((String ringtone) {
-            return DropdownMenuItem<String>(
-              value: ringtone,
-              child: Text('Alarm Tone ${viewModel.ringtones.indexOf(ringtone) + 1}'),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              viewModel.selectRingtone(newValue);
-            }
-          },
-        ),
+        Text(viewModel.alarmModel.toneName ?? 'No audio selected'),
         const SizedBox(height: 10),
-        ElevatedButton.icon(
-          icon: const Icon(Icons.folder_open),
-          label: const Text('Select from Device'),
-          onPressed: () {
-            // We will call a new method in the view model
-            Provider.of<AlarmViewModel>(context, listen: false)
-                .selectRingtoneFromFile();
-          },
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 50),
-          ),
+        ElevatedButton(
+          onPressed: () => viewModel.selectRingtoneFromFile(),
+          child: const Text('Pick Audio File'),
         ),
       ],
     );

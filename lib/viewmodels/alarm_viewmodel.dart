@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import '../models/alarm_model.dart';
 import '../models/quiz_model.dart';
 import '../services/alarm_service.dart';
@@ -16,9 +18,7 @@ import 'package:utho/utils/app_router.dart';
 
 class AlarmViewModel extends ChangeNotifier {
   final AlarmService _alarmService = AlarmService();
-  final QuizService _quizService = QuizService(); // Add an instance of QuizService
-
-  // Make _audioPlayer a class field
+  final QuizService _quizService = QuizService();
   final AudioPlayer _audioPlayer = AudioPlayer();
   Timer? _timer;
   Timer? _linuxAlarmTimer; // Linux fallback timer
@@ -27,7 +27,7 @@ class AlarmViewModel extends ChangeNotifier {
   AlarmModel _alarmModel = AlarmModel(
     isAlarmSet: false,
     isAlarmRinging: false,
-    selectedRingtone: 'assets/audios/alarm_tone_1.mp3',
+    selectedRingtone: null,
     currentTime: '',
   );
 
@@ -39,16 +39,9 @@ class AlarmViewModel extends ChangeNotifier {
     isLoadingQuiz: false,
   );
 
-  final List<String> _ringtones = [
-    'assets/audios/alarm_tone_1.mp3',
-    'assets/audios/alarm_tone_2.mp3',
-    'assets/audios/alarm_tone_3.mp3',
-  ];
-
   // Getters
   AlarmModel get alarmModel => _alarmModel;
   QuizModel get quizModel => _quizModel;
-  List<String> get ringtones => _ringtones;
 
   // Add this getter
   bool get isQuizCompleted => _quizModel.correctAnswers >= _quizModel.requiredCorrectAnswers;
@@ -128,32 +121,6 @@ class AlarmViewModel extends ChangeNotifier {
   void selectTime(TimeOfDay time) {
     _alarmModel = _alarmModel.copyWith(selectedTime: time);
     _safeNotify();
-  }
-
-  void selectRingtone(String ringtone) {
-    _alarmModel = _alarmModel.copyWith(selectedRingtone: ringtone);
-    _alarmService.saveRingtone(ringtone);
-    _safeNotify();
-  }
-
-  Future<void> selectRingtoneFromFile() async {
-    // Request permission first
-    var status = await Permission.audio.request();
-    if (status.isGranted) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.audio,
-      );
-
-      if (result != null && result.files.single.path != null) {
-        String filePath = result.files.single.path!;
-        _alarmModel = _alarmModel.copyWith(selectedRingtone: filePath);
-        _alarmService.saveRingtone(filePath); // Save the custom path
-        _safeNotify();
-      }
-    } else {
-      // Handle the case where permission is denied
-      // The print statement was removed to fix the lint warning.
-    }
   }
 
   // REMOVE legacy setAlarm in favor of _scheduleAlarm via public scheduleAlarm() wrapper
@@ -270,7 +237,9 @@ class AlarmViewModel extends ChangeNotifier {
 
   void triggerAlarm() {
     _alarmModel = _alarmModel.copyWith(isAlarmRinging: true);
-    _alarmService.playAlarm(_alarmModel.selectedRingtone);
+    if (_alarmModel.selectedRingtone != null) {
+      _alarmService.playAlarm(_alarmModel.selectedRingtone!);
+    }
     _safeNotify();
   }
 
@@ -344,6 +313,31 @@ class AlarmViewModel extends ChangeNotifier {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (hasListeners) notifyListeners();
       });
+    }
+  }
+
+  Future<void> selectRingtoneFromFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.audio,
+    );
+    if (result != null && result.files.single.path != null) {
+      final picked = result.files.single;
+      final appDocs = await getApplicationDocumentsDirectory();
+      final tonesDir = Directory(p.join(appDocs.path, 'tones'));
+      await tonesDir.create(recursive: true);
+      // Sanitize filename to avoid issues
+      final safeName = picked.name.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+      final filename = '${DateTime.now().millisecondsSinceEpoch}_$safeName';
+      final destPath = p.join(tonesDir.path, filename);
+      // Copy the file to app storage
+      await File(picked.path!).copy(destPath);
+      // Update the model with the copied path and display name
+      _alarmModel = _alarmModel.copyWith(
+        selectedRingtone: destPath,
+        toneName: picked.name, // Store the original name for UI
+      );
+      _alarmService.saveRingtone(destPath); // Save the copied path
+      _safeNotify();
     }
   }
 }

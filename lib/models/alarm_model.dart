@@ -4,15 +4,17 @@ class AlarmModel {
   final TimeOfDay? selectedTime;
   final bool isAlarmSet;
   final bool isAlarmRinging;
-  final String selectedRingtone;
+  final String? selectedRingtone;
   final String currentTime;
+  final String? toneName;
 
   AlarmModel({
     this.selectedTime,
     required this.isAlarmSet,
     required this.isAlarmRinging,
-    required this.selectedRingtone,
+    this.selectedRingtone,
     required this.currentTime,
+    this.toneName,
   });
 
   AlarmModel copyWith({
@@ -21,6 +23,7 @@ class AlarmModel {
     bool? isAlarmRinging,
     String? selectedRingtone,
     String? currentTime,
+    String? toneName,
   }) {
     return AlarmModel(
       selectedTime: selectedTime ?? this.selectedTime,
@@ -28,6 +31,7 @@ class AlarmModel {
       isAlarmRinging: isAlarmRinging ?? this.isAlarmRinging,
       selectedRingtone: selectedRingtone ?? this.selectedRingtone,
       currentTime: currentTime ?? this.currentTime,
+      toneName: toneName ?? this.toneName,
     );
   }
 }
