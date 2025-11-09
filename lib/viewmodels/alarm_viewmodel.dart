@@ -9,6 +9,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/alarm_model.dart';
 import '../models/quiz_model.dart';
 import '../services/alarm_service.dart';
@@ -39,12 +40,26 @@ class AlarmViewModel extends ChangeNotifier {
     isLoadingQuiz: false,
   );
 
+  // Hafidh mode state
+  bool _hafidhMode = false;
+
+  // Restricted surahs when hafidh mode is off
+  final List<int> _restrictedSurahs = [1, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114];
+
   // Getters
   AlarmModel get alarmModel => _alarmModel;
   QuizModel get quizModel => _quizModel;
+  bool get hafidhMode => _hafidhMode;
 
   // Add this getter
   bool get isQuizCompleted => _quizModel.correctAnswers >= _quizModel.requiredCorrectAnswers;
+
+  void toggleHafidhMode() async {
+    _hafidhMode = !_hafidhMode;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hafidhMode', _hafidhMode);
+    notifyListeners();
+  }
 
   // Constructor
   AlarmViewModel() {
@@ -64,6 +79,10 @@ class AlarmViewModel extends ChangeNotifier {
     if (savedRingtone != null) {
       _alarmModel = _alarmModel.copyWith(selectedRingtone: savedRingtone);
     }
+
+    // Load hafidh mode
+    final prefs = await SharedPreferences.getInstance();
+    _hafidhMode = prefs.getBool('hafidhMode') ?? false;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateCurrentTime();
@@ -130,6 +149,14 @@ class AlarmViewModel extends ChangeNotifier {
   }
 
   Future<void> scheduleAlarm() async {
+    // Reset quiz state for new alarm
+    _quizModel = QuizModel(
+      correctAnswers: 0,
+      totalQuestions: 0,
+      requiredCorrectAnswers: 3,
+      isLoadingQuiz: false,
+    );
+
     if (Platform.isLinux) {
       // Linux fallback: schedule via Dart Timer
       _linuxAlarmTimer?.cancel();
@@ -207,7 +234,7 @@ class AlarmViewModel extends ChangeNotifier {
     _quizModel = _quizModel.copyWith(isLoadingQuiz: true);
     _safeNotify();
     try {
-      final question = await _quizService.fetchQuizQuestion();
+      final question = await _quizService.fetchQuizQuestion(_hafidhMode ? null : _restrictedSurahs);
       _quizModel = _quizModel.copyWith(isLoadingQuiz: false);
       _safeNotify();
       return question;

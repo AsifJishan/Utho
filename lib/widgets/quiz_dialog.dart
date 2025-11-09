@@ -19,7 +19,9 @@ class _QuizDialogState extends State<QuizDialog> {
   @override
   void initState() {
     super.initState();
-    _loadNextQuestion();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadNextQuestion();
+    });
   }
 
   Future<void> _loadNextQuestion() async {

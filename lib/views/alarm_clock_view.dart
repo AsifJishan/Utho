@@ -34,6 +34,8 @@ class _AlarmClockViewState extends State<AlarmClockView> {
                   const SizedBox(height: 30),
                   if (viewModel.alarmModel.isAlarmSet)
                     _buildAlarmStatus(),
+                  const SizedBox(height: 30),
+                  _buildHafidhModeToggle(viewModel),
                 ],
               ),
             ),
@@ -159,6 +161,15 @@ class _AlarmClockViewState extends State<AlarmClockView> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildHafidhModeToggle(AlarmViewModel viewModel) {
+    return SwitchListTile(
+      title: const Text('Hafidh Mode'),
+      subtitle: const Text('Enable to access all surahs'),
+      value: viewModel.hafidhMode,
+      onChanged: (value) => viewModel.toggleHafidhMode(),
     );
   }
 

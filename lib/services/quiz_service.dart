@@ -5,17 +5,18 @@ import 'package:flutter/foundation.dart';
 import '../models/quiz_model.dart';
 
 class QuizService {
-  Future<QuizQuestion> fetchQuizQuestion() async {
+  Future<QuizQuestion> fetchQuizQuestion(List<int>? allowedSurahs) async {
     try {
       debugPrint('Attempting to fetch question from API...');
       
-      // Generate random Surah selection (1-114 are valid Surah numbers)
+      // Generate random Surah selection from allowed surahs
       final random = Random();
       final List<int> randomSurahs = [];
       
-      // Generate 5 random unique Surah numbers
+      // Generate 5 random unique Surah numbers from allowed list or all
+      final effectiveAllowed = allowedSurahs ?? List.generate(114, (i) => i + 1);
       while (randomSurahs.length < 5) {
-        int surahNumber = random.nextInt(114) + 1; // 1-114
+        int surahNumber = effectiveAllowed[random.nextInt(effectiveAllowed.length)];
         if (!randomSurahs.contains(surahNumber)) {
           randomSurahs.add(surahNumber);
         }
