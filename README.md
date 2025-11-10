@@ -154,8 +154,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - Quran API provided by [zakiego](https://github.com/zakiego)
-- Flutter community for excellent documentation and packages
-- Islamic scholars for making Quran education accessible
 
 ## Support
 
