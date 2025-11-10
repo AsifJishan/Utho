@@ -16,15 +16,15 @@ Instead of mindless snoozing, challenge your mind with Islamic knowledge to star
 
 ### Main Interface
 
-![Main Screen](screenshots/main_screen.png)
+![Main Screen](screenshots/main_screen.jpg)
 
 ### Setting an Alarm
 
-![Alarm Setup](screenshots/alarm_setup.png)
+![Alarm Setup](screenshots/alarm_setup.jpg)
 
 ### Quran Quiz
 
-![Quiz Interface](screenshots/quiz_screen.png)
+![Quiz Interface](screenshots/quiz_screen.jpg)
 
 ## Releases
 
