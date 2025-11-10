@@ -90,7 +90,7 @@ Download the latest version from the [Releases](https://github.com/AsifJishan/Ut
 
 ### For iOS Users
 
-iOS version coming soon! For now, you'll need to build from source on a Mac with Xcode.
+iOS version will be here, inshaAllah! For now, you'll need to build from source on a Mac with Xcode.
 
 ### For Linux Users
 
