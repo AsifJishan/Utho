@@ -135,7 +135,7 @@ flutter build linux
 
 ## API
 
-The app uses the [Quran Guess Surah API](https://quran.zakiego.com/) to fetch quiz questions.
+The app uses the [Quran-Quiz API](https://quran.zakiego.com/) to fetch quiz questions.
 
 ## Contributing
 
