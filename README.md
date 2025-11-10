@@ -69,18 +69,20 @@ Download the latest version from the [Releases](https://github.com/AsifJishan/Ut
 
 ### For Android Users (Easy Install)
 
-1. **Download the APK**: Visit the [Releases](https://github.com/AsifJishan/Utho---Alarm-Clock-with-Quran-Quiz/releases) page and download the latest `utho-release.apk` file
+1. **Download the ZIP**: Visit the [Releases](https://github.com/AsifJishan/Utho---Alarm-Clock-with-Quran-Quiz/releases) page and download the latest `utho-v1.0.0.zip` file
 
-2. **Enable Unknown Sources** (if not already enabled):
+2. **Extract the APK**: Unzip the downloaded file to get `utho-v1.0.0.apk`
+
+3. **Enable Unknown Sources** (if not already enabled):
    - Go to Settings → Apps → Special app access → Install unknown apps
    - Find your browser app and enable "Allow from this source"
 
-3. **Install the App**:
+4. **Install the App**:
    - Open the downloaded APK file
    - Tap "Install" when prompted
    - Wait for installation to complete
 
-4. **Grant Permissions**:
+5. **Grant Permissions**:
    - Open the app
    - Allow notification permissions when asked
    - Go to Setting → Apps → Utho and grant all required permission
