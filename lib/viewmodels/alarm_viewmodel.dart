@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/alarm_model.dart';
 import '../models/quiz_model.dart';
 import '../services/alarm_service.dart';
-import '../services/quiz_service.dart'; // Import the QuizService
+import '../services/quiz_service.dart';
 import 'package:utho/widgets/quiz_dialog.dart';
 import 'package:utho/utils/app_router.dart';
 
@@ -24,7 +24,6 @@ class AlarmViewModel extends ChangeNotifier {
   Timer? _timer;
   Timer? _linuxAlarmTimer; // Linux fallback timer
 
-  // State
   AlarmModel _alarmModel = AlarmModel(
     isAlarmSet: false,
     isAlarmRinging: false,
@@ -32,7 +31,6 @@ class AlarmViewModel extends ChangeNotifier {
     currentTime: '',
   );
 
-  // This field is reassigned with copyWith, so it cannot be final.
   QuizModel _quizModel = QuizModel(
     correctAnswers: 0,
     totalQuestions: 0,
@@ -40,18 +38,14 @@ class AlarmViewModel extends ChangeNotifier {
     isLoadingQuiz: false,
   );
 
-  // Hafidh mode state
   bool _hafidhMode = false;
 
-  // Restricted surahs when hafidh mode is off
   final List<int> _restrictedSurahs = [1, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114];
 
-  // Getters
   AlarmModel get alarmModel => _alarmModel;
   QuizModel get quizModel => _quizModel;
   bool get hafidhMode => _hafidhMode;
 
-  // Add this getter
   bool get isQuizCompleted => _quizModel.correctAnswers >= _quizModel.requiredCorrectAnswers;
 
   void toggleHafidhMode() async {
@@ -61,7 +55,6 @@ class AlarmViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Constructor
   AlarmViewModel() {
     _initialize();
   }
@@ -74,13 +67,11 @@ class AlarmViewModel extends ChangeNotifier {
   }
 
   void _initialize() async {
-    // Load the saved ringtone
     final savedRingtone = await _alarmService.loadRingtone();
     if (savedRingtone != null) {
       _alarmModel = _alarmModel.copyWith(selectedRingtone: savedRingtone);
     }
 
-    // Load hafidh mode
     final prefs = await SharedPreferences.getInstance();
     _hafidhMode = prefs.getBool('hafidhMode') ?? false;
 
@@ -88,7 +79,7 @@ class AlarmViewModel extends ChangeNotifier {
       _updateCurrentTime();
       _startTimeUpdate();
       _requestPermissions();
-      notifyListeners(); // Update UI after loading
+      notifyListeners();
     });
   }
 
@@ -105,11 +96,9 @@ class AlarmViewModel extends ChangeNotifier {
     }
   }
 
-  // OPTIMIZATION: Removed the broad post-frame callback from the timer loop.
   void _startTimeUpdate() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _updateCurrentTime();
-      // _checkAlarm(); // REMOVE THIS LINE
     });
   }
 
@@ -120,31 +109,12 @@ class AlarmViewModel extends ChangeNotifier {
     _safeNotify();
   }
 
-  // REMOVE THIS ENTIRE METHOD
-  /*
-  void _checkAlarm() {
-    if (_alarmModel.isAlarmSet && _alarmModel.selectedTime != null && !_alarmModel.isAlarmRinging) {
-      final now = DateTime.now();
-      if (now.hour == _alarmModel.selectedTime!.hour && now.minute == _alarmModel.selectedTime!.minute) {
-        // This is the infrequent event that needs to be deferred.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (hasListeners) {
-            triggerAlarm();
-          }
-        });
-      }
-    }
-  }
-  */
-
   void selectTime(TimeOfDay time) {
     _alarmModel = _alarmModel.copyWith(selectedTime: time);
     _safeNotify();
   }
 
-  // REMOVE legacy setAlarm in favor of _scheduleAlarm via public scheduleAlarm() wrapper
   void setAlarm() {
-    // Deprecated: keep empty to avoid duplicate scheduling. Use scheduleAlarm() instead.
     scheduleAlarm();
   }
 
@@ -208,10 +178,7 @@ class AlarmViewModel extends ChangeNotifier {
     _safeNotify();
   }
 
-  // ADD THIS METHOD
   Future<void> _saveAlarmState() async {
-    // This assumes your AlarmService has a method to save the boolean state.
-    // If not, you would add it there.
     await _alarmService.saveAlarmState(_alarmModel.isAlarmSet);
   }
 
@@ -229,7 +196,6 @@ class AlarmViewModel extends ChangeNotifier {
     _safeNotify();
   }
 
-  // ADD THIS METHOD
   Future<QuizQuestion> fetchQuizQuestion() async {
     _quizModel = _quizModel.copyWith(isLoadingQuiz: true);
     _safeNotify();
@@ -245,7 +211,6 @@ class AlarmViewModel extends ChangeNotifier {
     }
   }
 
-  // ADD THIS METHOD
   void handleQuizAnswer(bool isCorrect) {
     int newCorrectAnswers = _quizModel.correctAnswers;
     if (isCorrect) {

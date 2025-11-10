@@ -21,7 +21,7 @@ class _AlarmClockViewState extends State<AlarmClockView> {
         builder: (context, viewModel, child) {
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            // Wrap the Column in a SingleChildScrollView to prevent overflow
+            // Wrapped the Column in a SingleChildScrollView to prevent overflow
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

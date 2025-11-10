@@ -10,7 +10,6 @@ class NotificationController {
   @pragma("vm:entry-point")
   static Future<void> onNotificationCreatedMethod(
       ReceivedNotification receivedNotification) async {
-    // Removed immediate trigger to avoid early playback when a scheduled notification is merely created.
   }
 
   /// Use this method to detect every time that a new notification is displayed
@@ -37,13 +36,11 @@ class NotificationController {
   @pragma("vm:entry-point")
   static Future<void> onDismissActionReceivedMethod(
       ReceivedAction receivedAction) async {
-    // Your code goes here
   }
 
   /// Use this method to detect when the user taps on a notification or action button
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(
       ReceivedAction receivedAction) async {
-    // Your code goes here
   }
 }

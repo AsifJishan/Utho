@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AlarmService {
   final AudioPlayer _audioPlayer = AudioPlayer();
   static const String _ringtoneKey = 'selected_ringtone';
-  // Add a key for the alarm's on/off state
   static const String _alarmStateKey = 'alarm_is_set';
 
   Future<void> playAlarm(String ringtonePath) async {
@@ -31,16 +30,14 @@ class AlarmService {
     return prefs.getString(_ringtoneKey);
   }
 
-  // ADD THIS METHOD to save the alarm's on/off state
   Future<void> saveAlarmState(bool isSet) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_alarmStateKey, isSet);
   }
 
-  // ADD THIS METHOD to load the alarm's on/off state
   Future<bool> loadAlarmState() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_alarmStateKey) ?? false; // Default to false if not found
+    return prefs.getBool(_alarmStateKey) ?? false;
   }
 
   void dispose() {
