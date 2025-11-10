@@ -1,4 +1,4 @@
-# Utho - Alarm Clock with Quranic Quiz
+# Utho - Alarm Clock with Quran Quiz
 
 Instead of mindless snoozing, challenge your mind with Islamic knowledge to start your day with purpose and cognitive stimulation.
 
